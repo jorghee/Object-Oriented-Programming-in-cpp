@@ -1,11 +1,12 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Iinclude
-TARGET = bin/app
-SRCS = src/main.cpp src/OperableString.cpp
+
+SRC = src/main.cpp
+OUT = bin/app
 
 all:
 	mkdir -p bin
-	$(CXX) $(CXXFLAGS) $(SRCS) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(OUT)
 
 clean:
 	rm -rf bin
