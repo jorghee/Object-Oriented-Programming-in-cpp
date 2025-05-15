@@ -1,4 +1,4 @@
-#include "IrregularPolygon.h"
+#include "../include/IrregularPolygon.h"
 #include <cmath>
 using namespace std;
 
