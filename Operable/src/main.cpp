@@ -1,42 +1,81 @@
+#include "../include/Operable.h"
 #include "../include/OperableVector.h"
-#include "../include/OperableMatrix.h"
 #include "../include/OperableString.h"
+#include "../include/OperableMatrix.h"
+
+#include <iostream>
 #include <memory>
+#include <string>
+
+std::shared_ptr<Operable> createEntity(int type) {
+  if (type == 1) { // Número como vector de un elemento
+    int val;
+    std::cout << "Enter a number: ";
+    std::cin >> val;
+    return std::make_shared<OperableVector<int>>(val);
+  } else if (type == 2) { // Vector
+    int n;
+    std::cout << "Enter number of elements: ";
+    std::cin >> n;
+    std::vector<int> values(n);
+    std::cout << "Enter elements: ";
+    for (int& v : values) std::cin >> v;
+    return std::make_shared<OperableVector<int>>(values);
+  } else if (type == 3) { // String o lista de strings
+    std::cout << "Enter number of strings: ";
+    int n;
+    std::cin >> n;
+    std::vector<std::string> values(n);
+    std::cout << "Enter strings: ";
+    for (std::string& s : values) std::cin >> s;
+    return std::make_shared<OperableString>(values);
+  } else if (type == 4) { // Matriz
+    int rows, cols;
+    std::cout << "Enter number of rows and columns: ";
+    std::cin >> rows >> cols;
+    std::vector<std::vector<int>> mat(rows, std::vector<int>(cols));
+    std::cout << "Enter matrix values row by row:\n";
+    for (auto& row : mat)
+      for (int& val : row)
+        std::cin >> val;
+    return std::make_shared<OperableMatrix<int>>(mat);
+  }
+  return nullptr;
+}
 
 int main() {
-  Operable* num1 = new OperableVector<int>(5);
-  Operable* num2 = new OperableVector<int>(10);
-  std::unique_ptr<Operable> numSum(num1->add(*num2));
-  std::unique_ptr<Operable> numMul(num1->multiply(*num2));
+  std::cout << "==== Operable Entity System ====\n";
+  std::cout << "Choose data type:\n";
+  std::cout << "1. Number\n2. Vector\n3. String\n4. Matrix\n> ";
+  int type;
+  std::cin >> type;
 
-  std::cout << "Number sum: "; numSum->print();
-  std::cout << "Number product: "; numMul->print();
+  std::cout << "\n--- Enter first operand ---\n";
+  auto obj1 = createEntity(type);
+  std::cout << "\n--- Enter second operand ---\n";
+  auto obj2 = createEntity(type);
 
-  Operable* vec1 = new OperableVector<float>({1.0f, 2.0f});
-  Operable* vec2 = new OperableVector<float>({3.0f, 4.0f});
-  std::unique_ptr<Operable> vecSum(vec1->add(*vec2));
-  std::unique_ptr<Operable> vecMul(vec1->multiply(*vec2));
+  std::cout << "\nChoose operation:\n";
+  std::cout << "1. Add\n2. Multiply\n> ";
+  int op;
+  std::cin >> op;
 
-  std::cout << "Vector sum: "; vecSum->print();
-  std::cout << "Vector product: "; vecMul->print();
+  std::shared_ptr<Operable> result;
+  try {
+    if (op == 1)
+      result = std::shared_ptr<Operable>(obj1->add(*obj2));
+    else if (op == 2)
+      result = std::shared_ptr<Operable>(obj1->multiply(*obj2));
+    else {
+      std::cerr << "Invalid operation selected.\n";
+      return 1;
+    }
 
-  Operable* mat1 = new OperableMatrix<int>({{1, 2}, {3, 4}});
-  Operable* mat2 = new OperableMatrix<int>({{5, 6}, {7, 8}});
-  std::unique_ptr<Operable> matSum(mat1->add(*mat2));
-  std::unique_ptr<Operable> matMul(mat1->multiply(*mat2));
-
-  std::cout << "Matrix sum:\n"; matSum->print();
-  std::cout << "Matrix product:\n"; matMul->print();
-
-  Operable* str1 = new OperableString("Hi");
-  Operable* str2 = new OperableString("There");
-  std::unique_ptr<Operable> strSum(str1->add(*str2));
-  std::cout << "String concatenation: "; strSum->print();
-
-  delete num1; delete num2;
-  delete vec1; delete vec2;
-  delete mat1; delete mat2;
-  delete str1; delete str2;
+    std::cout << "\nResult: ";
+    result->print();
+  } catch (const std::bad_cast& e) {
+    std::cerr << "Operation failed: incompatible types.\n";
+  }
 
   return 0;
 }
