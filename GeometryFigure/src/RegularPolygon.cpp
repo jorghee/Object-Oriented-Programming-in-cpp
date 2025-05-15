@@ -1,4 +1,4 @@
-#include "RegularPolygon.h"
+#include "../include/RegularPolygon.h"
 #include <cmath>
 #include <sstream>
 
